@@ -20,10 +20,25 @@ This is the logical and physical layout of the components
 
 # Steps
 
-* Build the chair
-* Build the controller
-* Programming
-* Do anything except worry about your lawn
+## Completed
+
+- bought everything above
+- stripped an old beatup chair
+- fabricated solar panel mount from the old chair mount
+- removed the brake from both motors (it's a parasitic load)
+- re-assembled chair
+- stripped electric hedge trimmers, built an attachment for them.
+
+## Started
+- Coding the Pi (see this repository)
+  - Setup Pi
+  - GPS Reader
+  - INS Reader
+  - Wrote PWM Motor controller logic
+  - Sourced PID controller for navigation control (heading/speed adjustments)
+
+## Next steps
+  - Test motor control
 
 # Current status
 
