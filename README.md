@@ -8,10 +8,12 @@ I want a 100% autonimous non-stupid set-it-forget-it bulk grass cutting device t
 # Technology
 
 - Old beat up Power Chair, preferably without batteries.
-- Two Hedge Trimmers
+- Two Hedge Trimmers; I may evaluate reel mowers too, they cut better (on short, frequently cut grass) and use about the same energy
 - Raspbery Pi 3 A+ main board
-- Adafruit GPS HAT
-- H-Bridge to power the motors
+- ~~Adafruit GPS HAT~~ (I need cm accuracy, regular GPS won't cut it[ouch])
+- 2x NavSpark DGPS receievers
+- 2x Long ranage 915mhz trasmitter/receiver modules
+- 3x H-Bridge to power the motors
 
 # Design
 
