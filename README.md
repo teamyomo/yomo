@@ -16,7 +16,7 @@ I want a 100% autonimous non-stupid set-it-forget-it bulk grass cutting device t
 # Design
 
 This is the logical and physical layout of the components
-![logical and physical design diagram](resources/Yardbot - High Level.png)
+![logical and physical design diagram](resources/yomo_design.png)
 
 # Steps
 
