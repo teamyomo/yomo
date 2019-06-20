@@ -39,6 +39,20 @@ This is the logical and physical layout of the components
   - Wrote PWM Motor controller logic
   - Sourced PID controller for navigation control (heading/speed adjustments)
 
+## RTK GPS
+
+** 6/20/2019 NOTE: this hasn't even arrived yet.  I'll make an update once it's here and I'm using it.
+
+Getting a hyper accurate position sensor is really the key to this project actually working at all.  After a lot of searching I found an  inexpensive RTK GPS setup with good instructional videos and great documentation (not entirely Chineese, so really good).  It's modules only, so there's manual setups and configurations and it needs a seperate LoRa transciever to sync the sat offset data.  But the chips do all the real work and the project gets 1cm accuracy.
+
+The whole RTK setup will "true out" at $250.  Next cheapest "hobby grade" is $600; after that it goes up steaply.  $1500 for the first shrink wrap solution then sky is the limits for survey stuff (2k-5k). 
+
+Watch this video:
+[NavSpark Overview/Setup video](https://www.youtube.com/watch?v=17fS9YZC84I)
+
+Source:
+[NavSpark Store](http://navspark.mybigcommerce.com/)
+
 ## Next steps
   - Test motor control
 
