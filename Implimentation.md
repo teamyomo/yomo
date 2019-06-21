@@ -94,11 +94,11 @@ The ADM finally is responsible for turning on/off the mower itself via GPIO.
 
 The navigation module(NM) is responsible for translating routing, possition and attitude into wheels being steered.
 
-!Position! is recieved by a 10hz 10mm precision RTK GPS update.  The NM must receive the fastest possible feed of the GPS data. It's feed rate is second only to the Attitude sensor.
+**Position** is recieved by a 10hz 10mm precision RTK GPS update.  The NM must receive the fastest possible feed of the GPS data. It's feed rate is second only to the Attitude sensor.
 
-!Attitude! sensor data is read in via a USB-UART and provides the most time-critical feedback to the Steering PID control.
+**Attitude** sensor data is read in via a USB-UART and provides the most time-critical feedback to the Steering PID control.
 
-!A route request contains;!
+**A route request contains;**
  * Initial point
  * Terminus point
  * Requested Velocity
