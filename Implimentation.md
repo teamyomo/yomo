@@ -14,7 +14,7 @@ The vehicle moves slowly and no operation requires clock-cycle accuracy to ensur
 
 The software running on the Pi breaks down into three major components;
 
-* Configuration
+* Operations Interface (OI)
 * Command (ACM)
 * Navigation (NM)
 
@@ -24,7 +24,7 @@ There is one primary application all of the software is running under.  It is re
 
 Meanwhile in the background several threads are running the modules listed below to keep the vehicle in motion and responding physically as requested.
 
-# Operator Interface (OI)
+# Operations Interface (OI)
 
 The operator is required to configure YoMo and manually command it to relocate it and demarkate operating regions and non-operating regions. To do this he will also need to see the critical parameters kept by application layer context. 
 
