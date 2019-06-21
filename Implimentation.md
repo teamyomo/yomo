@@ -73,7 +73,7 @@ These will all be provided for and displayed in the OI.
 
 All request to physically do anything on the vehicle go through the automated command module (ACM).  It is responsible for interpretting commands in the context of configuration and current location and generate routes of travel for the navigation module (NM).  
 
-!The operating modes are:!
+**The operating modes are:**
 
 * Stand-By - No motion, no command, stand-still
 * Haulted - non-commanded non-motion, in distress
@@ -81,7 +81,7 @@ All request to physically do anything on the vehicle go through the automated co
 * AutoRoute - Navigate a route, starting at the closest and going to the next passing them to the NM
 * AutoRegion - Given a region, grid it and generate routes for each pass for the NM
 
-!Gridding Algorithm! - The ACM is responsible for grid generation, it will be handed a region.  The MVP grid algorithm is as follows;
+**Gridding Algorithm** - The ACM is responsible for grid generation, it will be handed a region.  The MVP grid algorithm is as follows;
 1. Generate sub-regions as nessary for "islanding"
 1. AutoRoute to Region initial start point
 1. Sweep parimeter twice
