@@ -20,6 +20,8 @@ I want a 100% autonimous non-stupid set-it-forget-it bulk grass cutting device t
 This is the logical and physical layout of the components
 ![logical and physical design diagram](resources/yomo_design.png)
 
+[The implimenation specification](implimentation.md) details the hardware/software compontents that will make-up the rover and how/what technology they will be built on.
+
 # Steps
 
 ## Completed
