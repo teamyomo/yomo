@@ -6,12 +6,11 @@
 
 # Tech Stack
   * [Raspbian OS](https://www.raspberrypi.org/downloads/raspbian/)
-  * [.Net Core 2.2 running on Rasbian services](https://blogs.msdn.microsoft.com/david/2017/07/20/setting_up_raspian_and_dotnet_core_2_0_on_a_raspberry_pi/)
-  * [Node.JS web hosting using MyAPI.js](http://www.robert-drummond.com/2013/05/08/how-to-build-a-restful-web-api-on-a-raspberry-pi-in-javascript-2/)
+  * [.Net Core 2.2 ASP.Net RESTfullAPI/Service running on Rasbian services](https://blogs.msdn.microsoft.com/david/2017/07/20/setting_up_raspian_and_dotnet_core_2_0_on_a_raspberry_pi/)
   
 # Operating system requirement
   
-  The vehicle moves slowly and no operation requires clock-cycle accuracy to ensure timely completion.  The PID loops can accomidate interuptions.  So a real-time operating system is not a hard requirement.  For that reason regular Rasbian is the OS choice.
+The vehicle moves slowly and no operation requires clock-cycle accuracy to ensure timely completion.  The PID loops can accomidate interuptions.  So a real-time operating system is not a hard requirement.  For that reason regular Rasbian is the OS choice.
 
 The software running on the Pi breaks down into three major components;
 
@@ -19,9 +18,15 @@ The software running on the Pi breaks down into three major components;
 * Command (ACM)
 * Navigation (NM)
 
-# Operator input
+# Application
 
-The operator is required to configure YoMo and manually command it to relocate it and demarkate operating regions and non-operating regions.
+There is one primary application all of the software is running under.  It is responsible for all of the software responsibilities listed directly above.  It is a single instance of a .Net Core ASP.Net 2.2 WebAPI with several background processes sharing a common Application Layer Context (ALC) between "modules" (really classes).  The RESTfull API controller is mearly presenting aspects of the ALC as json to the web client which interprets that json into presentation for the operator. 
+
+Meanwhile in the background several threads are running the modules listed below to keep the vehicle in motion and responding physically as requested.
+
+# Operator Interface (OI)
+
+The operator is required to configure YoMo and manually command it to relocate it and demarkate operating regions and non-operating regions. To do this he will also need to see the critical parameters kept by application layer context. 
 
 Potential configurations are as follows;
 
@@ -48,11 +53,21 @@ _Future Configurations_
 * What kind of gridding pattern (up-down,left-right, diagonal, diagonal swapped, spiral-in, spiral-out, mixed)
 * Steering PID tuning (P-I-D)
 
-The configurations and directing commands will be done via an HTML page running client-side javascript talking to a RESTful WebAPI service running on the Raspberry Pi under MyAPI.js (NodeJS).
+The configurations and directing commands will be done via an HTML page running client-side javascript talking to a RESTful WebAPI service running on the Raspberry Pi (see Application description above).
 
-Using Node.JS and MyAPI.js to build a simple webapi / client-side javascript web-page
 
 # Background Services
+
+All modules listed below are actually running in a single .Net Core 2.2 instance as background threads.  The modules described below are actually just logical groupings of classes.  Collectively these jobs are loosely refered to as "background services".
+
+The startup/loop of the Application will also generate at a low-level the monitoring statistics;
+* System status 
+* Last mowed
+* Days/Hours in service
+* Battery voltage
+* Solar voltage
+
+These will all be provided for and displayed in the OI.
 
 ## Automated Command Module(ACM)
 
