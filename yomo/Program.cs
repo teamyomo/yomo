@@ -1,39 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using Unosquare.RaspberryIO;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace yomo
 {
-	class MainClass
-	{
-		public static void Main (string[] args)
-		{
-			Console.WriteLine ("YoMo lawn mowing software");
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            CreateWebHostBuilder(args).Build().Run();
+        }
 
-            Console.WriteLine("Initializing GPIO");
-            Pi.Init<BootstrapWiringPi>();
-
-            Console.WriteLine("Starting sensor listeners");
-            var position = new Position();
-			Task.Run(() => position.LoopReadPosition((lat,lng)=>
-				{
-					Console.WriteLine($"Pos: {lat},{lng}");
-				}));
-
-			var attitude = new Attitude();
-			Task.Run(() => attitude.LoopReadPosition(att=>
-				{
-					Console.WriteLine($"Hdg: {att.Heading}");
-				}));
-
-            var locomotion = new Locomotion();
-
-			// Drive the wheels towards a target
-
-            // Do we have a command?
-
-			// take a nap
-			for(;;) System.Threading.Thread.Sleep(int.MaxValue);
-		}
-	}
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>();
+    }
 }
