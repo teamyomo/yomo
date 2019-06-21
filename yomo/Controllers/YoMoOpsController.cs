@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using yomo.Models;
 
 namespace yomo.Controllers
 {
@@ -41,7 +42,7 @@ namespace yomo.Controllers
         /// </summary>
         /// <param name="command"></param>
         [HttpPost]
-        public void Post([FromBody] Command command)
+        public void Post([FromBody] yomo.Models.Command command)
         {
             // Execute the command provided
         }

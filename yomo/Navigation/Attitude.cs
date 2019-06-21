@@ -1,8 +1,10 @@
-﻿using System;
-using System.IO.Ports;
+﻿using crozone.LinuxSerialPort;
+using System;
+using System.IO;
+//using System.IO.Ports;
 using System.Linq;
 
-namespace yomo
+namespace yomo.Navigation
 {
 	public class AttitudeInfo
 	{
@@ -16,104 +18,93 @@ namespace yomo
 		public float Temp { get; set; }
 	}
 
-	public class Attitude : IDisposable
+	public class Attitude
 	{
-		const string portName = "/dev/ttyUSB0";
-
-		private SerialPort Serial_tty = new SerialPort();
-
-		public Attitude()
-		{
-			Serial_tty.PortName = portName; //Assign the port name,
-			Serial_tty.BaudRate = 57600;               // Baudrate = 9600bps
-			try
-			{
-				Serial_tty.Open();                 // Open the port
-			}
-			catch (Exception x)
-			{
-				throw new Exception($"Error opening serial port: {Serial_tty.PortName}", x);
-			}
-		}
-
-		public void Dispose()
-		{
-			Serial_tty.Close();                // Close port
-		}
 
 		static int ibuff = 0;
 		static byte[] buffer = new byte[8];
 
 		public void LoopReadPosition(Action<AttitudeInfo> onAttitude)
 		{
-			var start = DateTime.Now;
-			int count = 0;
-			var attitude = new AttitudeInfo ();
+            const string portName = "/dev/ttyUSB0";
+        
+    		using (var Serial_tty = new LinuxSerialPort(portName) { BaudRate = 57600 })
+            {
+                Serial_tty.Open();
 
-			for(int i = 0; i < 100000; i++)
-			{
-				if (0x55 != Serial_tty.ReadByte())
-					continue;
+                Stream stream = Serial_tty.BaseStream;
 
-				var cmd = Serial_tty.ReadByte();
+                var start = DateTime.Now;
+                int count = 0;
+                var attitude = new AttitudeInfo();
 
-				int checksum = 0x55 + cmd;
-				ibuff = 0; // reset
-				for(int j = 0; j < 8; j++)
-				{
-					checksum += (int)(buffer[j] = (byte)Serial_tty.ReadByte());
-				}
+                for (int i = 0; i < 100000; i++)
+                {
+                    if (0x55 != stream.ReadByte())
+                        continue;
 
-				var recvCS = Serial_tty.ReadByte();
-				if ((byte)(checksum & 0xFF) != recvCS)
-					continue;
+                    var cmd = stream.ReadByte();
 
-				switch(cmd)
-				{
-				case 0x51:
-					var x = GetAcc(Serial_tty);
-					var y = GetAcc(Serial_tty);
-					var z = GetAcc(Serial_tty);
+                    int checksum = 0x55 + cmd;
+                    ibuff = 0; // reset
+                    for (int j = 0; j < 8; j++)
+                    {
+                        checksum += (int)(buffer[j] = (byte)stream.ReadByte());
+                    }
 
-					attitude.AccX = x;
-					attitude.AccY = y;
-					attitude.AccZ = z;
-					//                        Console.WriteLine($"X:{x}\tY:{y}\tZ:{z}\tG:{Math.Sqrt(x*x+y*y+z*z)}");
-					count++;
-					break;
+                    var recvCS = stream.ReadByte();
+                    if ((byte)(checksum & 0xFF) != recvCS)
+                        continue;
 
-				case 0x52:
-					GetAngle(Serial_tty);
-					GetAngle(Serial_tty);
-					var hdg = GetAngle(Serial_tty);
+                    switch (cmd)
+                    {
+                        case 0x51:
+                            var x = GetAcc(stream);
+                            var y = GetAcc(stream);
+                            var z = GetAcc(stream);
 
-					attitude.Heading = hdg;
-					//                        Console.WriteLine($"X:{x}\tY:{y}\tZ:{z}\tG:{Math.Sqrt(x*x+y*y+z*z)}");
-					count++;
-					break;
+                            attitude.AccX = x;
+                            attitude.AccY = y;
+                            attitude.AccZ = z;
+                            //                        Console.WriteLine($"X:{x}\tY:{y}\tZ:{z}\tG:{Math.Sqrt(x*x+y*y+z*z)}");
+                            count++;
+                            break;
 
-				case 0x53:
-					var pitch = -1.0f * (GetAngle (Serial_tty) - 90f);
-					var roll = GetAngle (Serial_tty);
-					var yaw = (-1.0F * GetAngle (Serial_tty) + 360 + 140) % 360;
-					var temp = GetInt (Serial_tty) / 100.0;
+                        case 0x52:
+                            GetAngle(stream);
+                            GetAngle(stream);
+                            var hdg = GetAngle(stream);
 
-					attitude.Pitch = pitch;
-					attitude.Roll = roll;
-					attitude.Yaw = yaw;
-					attitude.Temp = (float)temp;
+                            attitude.Heading = hdg;
+                            //                        Console.WriteLine($"X:{x}\tY:{y}\tZ:{z}\tG:{Math.Sqrt(x*x+y*y+z*z)}");
+                            count++;
+                            break;
 
-					count++;
-					break;
-				}
+                        case 0x53:
+                            var pitch = -1.0f * (GetAngle(stream) - 90f);
+                            var roll = GetAngle(stream);
+                            var yaw = (-1.0F * GetAngle(stream) + 360 + 140) % 360;
+                            var temp = GetInt(stream) / 100.0;
 
-				if (count >= 3)
-				{
-					onAttitude (attitude);
-					count = 0;
-				}
-			}
-		}
+                            attitude.Pitch = pitch;
+                            attitude.Roll = roll;
+                            attitude.Yaw = yaw;
+                            attitude.Temp = (float)temp;
+
+                            count++;
+                            break;
+                    }
+
+                    if (count >= 3)
+                    {
+                        onAttitude(attitude);
+                        count = 0;
+                    }
+                }
+            }
+        }
+
+
 
 		private static byte ReadByte()
 		{
@@ -121,16 +112,16 @@ namespace yomo
 			return buffer[ibuff++];
 		}
 
-		private static short GetInt(SerialPort sp)
+		private static short GetInt(Stream sp)
 		{
 			return (short)((short)ReadByte() | (((short)ReadByte()) << 8));
 		}
 
-		private static short GetAngle(SerialPort sp)
+		private static short GetAngle(Stream sp)
 		{
 			return (short)((180 * GetInt(sp)) / 32767);
 		}
-		private static float GetAcc(SerialPort sp)
+		private static float GetAcc(Stream sp)
 		{
 			return (float)GetInt(sp) / 3891.08125f;
 		}

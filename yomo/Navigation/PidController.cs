@@ -1,6 +1,6 @@
 using System;
 
-namespace PidController
+namespace yomo.Navigation
 {
     /// <summary>
     /// A (P)roportional, (I)ntegral, (D)erivative Controller
