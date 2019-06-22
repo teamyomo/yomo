@@ -1,8 +1,5 @@
 ﻿using System;
-using Unosquare.RaspberryIO;
 using Unosquare.RaspberryIO.Abstractions;
-using Unosquare.RaspberryIO.Native;
-using Unosquare.WiringPi;
 
 namespace yomo.Navigation
 {
