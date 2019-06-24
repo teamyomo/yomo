@@ -25,6 +25,7 @@ namespace yomo.Command
 
             var ptLast = new PointF { X = geometry.Coordinates[len-2], Y = geometry.Coordinates[len - 1] };
 
+            // Transform region float array into a point array, and derive the bounding box
             for (int i = 0; i < len; i += 2)
             {
                 var iPt = i / 2;
@@ -41,6 +42,8 @@ namespace yomo.Command
                 // Add the parimeter once, this give some space to turn
                 path.Add(pt);
             }
+
+            // Prepare some values we'll need to do gridding derived from the bounding box
 
             var bndsDX = (ptMax.X - ptMin.X);
             var bndsDY = (ptMax.Y - ptMin.Y);
@@ -67,6 +70,9 @@ namespace yomo.Command
             var dxGrid = (float)(-dy * gridSpacing);
             var dyGrid = (float)(dx * gridSpacing);
 
+            // This is the working loop.
+            // Go through all the line segments in the region and find all the intercepts with perpendicular lines at "gridSpacing" distances
+            // ToDo: It may work cleaner to loop through the parallel routes, then the perimeter segments
             ptLast = pts[len_2 - 1];
             for (int i = 0; i < len_2; i++)
             {
@@ -75,6 +81,10 @@ namespace yomo.Command
                 var y34 = slopes[i].Y;
 
                 var c = (float)(dx * y34 - dy * x34);
+
+                // TODO: if we flipped the j indexer with the i indexer, we wouldn't have to do this... 
+                // and there may be some perimeter edge sorting tricks so it's faster
+                var ptParT = ptParallel;
 
                 if (Math.Abs(c) < 0.01)
                 {
@@ -86,11 +96,11 @@ namespace yomo.Command
                     for (int j = 0; j < perpLines; j++)
                     {
                         // Find the x1,y1 x2,y2 for this parallel line 
-                        ptParallel.X += dxGrid;
-                        ptParallel.Y += dyGrid;
+                        ptParT.X += dxGrid;
+                        ptParT.Y += dyGrid;
 
-                        var x1 = ptParallel.X;
-                        var y1 = ptParallel.Y;
+                        var x1 = ptParT.X;
+                        var y1 = ptParT.Y;
                         var x2 = (float)(x1 + dx);   // we "make up" a point on the same line by following the slope of the grid angle
                         var y2 = (float)(y1 + dy);
 
@@ -114,6 +124,7 @@ namespace yomo.Command
                         // Is this in segment |3-4 ?
                         if (Between(x, x3, x4) && Between(y, y3, y4))
                         {
+                            // We got it... so
                             // Add intercept (x,y) @ iPt for perpLine index
                         }
                     }
