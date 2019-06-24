@@ -3,16 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using yomo.Models;
+using yomo.Utility;
 
 namespace yomo.Command
 {
-    public class PointF
-    {
-        public float X;
-        public float Y;
-    }
-
-    public class Grid
+     public class Grid
     {
         // Computes grids of veriuos types from a poly-region
 
@@ -71,10 +66,6 @@ namespace yomo.Command
             // (dx,dy) is a unit vector because it's a sin/cos pair, so this works without scaling effect.
             var dxGrid = (float)(-dy * gridSpacing);
             var dyGrid = (float)(dx * gridSpacing);
-
-
-            // Find the next point +"gridspacing" away from pt0
-            var pt1 = new PointF { X = pt0.X + dxGrid, Y = pt0.Y + dxGrid };
 
             ptLast = pts[len_2 - 1];
             for (int i = 0; i < len_2; i++)
