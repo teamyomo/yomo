@@ -20,26 +20,30 @@ I want a 100% autonimous non-stupid set-it-forget-it bulk grass cutting device t
 This is the logical and physical layout of the components
 ![logical and physical design diagram](resources/yomo_design.png)
 
+[Detailed Design](Design.md)
+
 [The implimenation specification](Implimentation.md) details the hardware/software compontents that will make-up the rover and how/what technology they will be built on.
 
 # Steps
 
-## Completed
+## Failures
+- Hedge trimmers suck for cutting grass
+- You don't need a power chair to have a mower
 
-- bought everything above
-- stripped an old beatup chair
-- fabricated solar panel mount from the old chair mount
-- removed the brake from both motors (it's a parasitic load)
-- re-assembled chair
-- stripped electric hedge trimmers, built an attachment for them.
+## Current Status
+- Purchased a pusher-style reel mower
+- Stripped off the wheels and drive chain
+- Attached power-chair-motors to right sides of reel mower
+- Wrote a good start to the hardest parts of the control system
+- Received the DGPS recievers
 
-## Started
-- Coding the Pi (see this repository)
-  - Setup Pi
-  - GPS Reader
-  - INS Reader
-  - Wrote PWM Motor controller logic
-  - Sourced PID controller for navigation control (heading/speed adjustments)
+## Next
+- 6/24 - Finish the mower hardware
+- 6/24 - Assemble the DGPS, AHRS & H-Bridge connections on the development hat board to the raspberry pi and wire in all the components.
+- 6/25 - Start writing Ops web page that will command robot in manual mode
+- 6/26 - Glue together all the code I've written and start to develope a game plan to getting the software ready to test
+- 6/27 - Motor that drives the reel arrives - fabricate bracket to hold it and prepare chain and chain tensioner.
+- 6/27 - Start testing / mowing
 
 ## RTK GPS
 
