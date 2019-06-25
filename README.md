@@ -1,5 +1,6 @@
 # yomo
 Autonomous solar-only lawn trimming rover
+![Autonomous solar-only lawn trimming rover](resources/yomo.jpg)
 
 # WHY?!
 
