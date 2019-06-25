@@ -1,8 +1,5 @@
 ﻿using System;
-using Unosquare.RaspberryIO;
-using Unosquare.RaspberryIO.Abstractions;
-using Unosquare.RaspberryIO.Native;
-using Unosquare.WiringPi;
+using yomo.Utility;
 
 namespace yomo.Navigation
 {
@@ -14,82 +11,91 @@ namespace yomo.Navigation
     /// </summary>
 	public class Navigator
 	{
-        // The wheels we intend to drive and which pin they are attached to.
-        Wheel left = new Wheel(BcmPin.Gpio13);
-        Wheel right = new Wheel(BcmPin.Gpio18);
-
-        private PidController headingPid = new PidController(1.1, 0.1, 0.1, 180, -180);
-
-        float idealHeading;
-        float correctingHeading;
-        float courseDeviation; // In meters (right positive, left negative)
+        PointF initial;
+        PointF target;
+        float courseHeading;
+        float targetSpeed = 0;
 
         float distanceToTarget;
         float timeToTarget;
 
-        float lastLat;
-        float lastLng;
+        PointF lastPosition;
+
         float lastSpeed;
         float lastHeading;
 
-        float targetLat;
-        float targetLng;
-        float targetSpeed = 0;
+        float crossTrackError; // In meters (right positive, left negative)
+        float targetHeading;
+
+        Kinematics kinematics = new Kinematics();
+        Attitude attitude = new Attitude();
+        Position position = new Position();
 
         public Navigator ()
 		{
+            // start a background task to set the attitude loop
 		}
 
-        public void SetTarget(float lat, float lng, float speed)
+        /// <summary>
+        ///  Do everything we need to navigate any given step
+        /// </summary>
+        public void NavigationLoop()
         {
-            targetLat = lat;
-            targetLng = lng;
+            // TODO: These attitude & position reader loops should run in the background
+
+            // Get Heading
+            attitude.LoopReadPosition(att => lastHeading = att.Heading);
+
+            // Get Position
+            position.LoopReadPosition(pos => { lastPosition.Y = pos.lat; lastPosition.X = pos.lng; lastSpeed = pos.speed; });
+
+            // Do the math to navigate
+
+            // Calculate cross track and heading
+            CalculateCTEAndDistance();
+
+            // Send to Kinematics
+            kinematics.KinematicsLoop(targetHeading, lastHeading, targetSpeed, lastSpeed);
+        }
+
+        public void SetRoute(PointF beginning, PointF target, float speed)
+        {
+            initial = beginning;
+            this.target = target;
             targetSpeed = speed;
+
+            var courseHeading = 180f * Math.Atan2(this.target.Y - initial.Y, this.target.X - initial.Y) / Math.PI;
+
         }
 
-        public void RefreshPosition(float lat, float lng, float speed, float heading)
+        public void SetTarget(PointF destinatin, float speed)
         {
-            lastLat = lat;
-            lastLng = lng;
-            lastSpeed = speed;
-            lastHeading = heading;
-
-            //CalculateDeviations();
-
-            //PidControlHeading();
-
-            //SteerWheels();
+            SetRoute(lastPosition, destinatin, speed);
         }
-	}
 
-    public class Wheel
-    {
-        int speed;
-        GpioPin pin;
-
-        public Wheel(BcmPin gpioPin)
+        /// <summary>
+        /// This isn't some fancy cross track error that uses the arcs of the earth... it's basic trig.  how far is a point from a line and how far till I get there
+        /// </summary>
+        private void CalculateCTEAndDistance()
         {
-            // TODO: Check out:
-            // https://raspberrypi.stackexchange.com/questions/4906/control-hardware-pwm-frequency
-            // https://stackoverflow.com/questions/20081286/controlling-a-servo-with-raspberry-pi-using-the-hardware-pwm-with-wiringpi
+            var delta = lastPosition - initial;
+            var l_2 = delta.MagSquared;
+            distanceToTarget = (float)Math.Sqrt(l_2);
 
-            pin = (GpioPin)Pi.Gpio[gpioPin];
-            pin.PinMode = GpioPinDriveMode.PwmOutput;
-            pin.PwmMode = PwmMode.MarkSign;
+            // Consider the line extending the segment, parameterized as v + t (w - v).
+            // We find projection of point p onto the line. 
+            // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+            // We clamp t from [0,1] to handle points outside the segment vw.
 
-            // pwmFrequency in Hz = 19.2e6 Hz / pwmClock / pwmRange.
-            pin.PwmClockDivisor = 16; // 1 is 4096, possible values are all powers of 2 starting from 2 to 2048
-            pin.PwmRange = 1024; 
-            pin.PwmRegister = 0; // (int)(pin.PwmRange * decimal duty); // This goes from 0 to PwmRange-1
+            float t = Math.Max(0, Math.Min(1, PointF.Dot(lastPosition - initial, delta) / l_2));
+            PointF projection = initial + t * delta;  // Projection falls on the segment 
+            crossTrackError = lastPosition.Distance(projection);
+
+            var courseCorrection = Math.Min(30, 10 * crossTrackError); // correction angle is cross track error distance * factor, but not over 30 degrees 
+            targetHeading = courseHeading + courseCorrection;
+
+            timeToTarget = (lastSpeed > 0) ? distanceToTarget / lastSpeed : 999;
         }
-
-        public void SetSpeed(int speed)
-        {
-            var inRange = (uint)Math.Max(0, Math.Min(MaxSpeed, speed));
-            pin.PwmRegister = (int)(MaxSpeed / inRange);
-        }
-
-        public uint MaxSpeed { get { return pin.PwmRange; } }
     }
 }
 
