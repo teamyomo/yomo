@@ -10,7 +10,14 @@ namespace yomo.Navigation
 	{
 		const string portName = "/dev/serial0";
 
-		public static void LoopReadPosition(Action<float,float> onPosition)
+        public class PositionRecord
+        {
+            public float lat;
+            public float lng;
+            public float speed;
+        }
+
+        public void LoopReadPosition(Action<PositionRecord> onPosition)
 		{
             // float latAvg = 0f;
             // float lngAvg = 0f;
@@ -27,32 +34,28 @@ namespace yomo.Navigation
                     var lin = stream.ReadLine();
 
                     var parts = lin.Split(',');
-                    if (!lin.StartsWith("$GPGGA") ||
-                        parts[6] == "0")
+                    if (!lin.StartsWith("$GPRMC") ||
+                        parts[2] != "A")
                         continue;
 
                     //            var todUTC = parts[1];
-                    var lat = float.Parse(parts[2]);
+                    var lat = float.Parse(parts[3]);
                     var deg = (float)Math.Floor(lat / 100);
                     lat = deg + (lat - (100f * deg)) / 60f;
 
-                    if (parts[3] != "N")
+                    if (parts[4] != "N")
                         lat = -lat;
 
-                    var lng = float.Parse(parts[4]);
+                    var lng = float.Parse(parts[5]);
                     deg = (float)Math.Floor(lng / 100f);
                     lng = deg + (lng - (100f * deg)) / 60f;
 
-                    if (parts[5] != "E")
+                    if (parts[6] != "E")
                         lng = -lng;
 
-                    //				var hdop = float.Parse(parts[6]);
+                    var speed = float.Parse(parts[7]); // speed in knots
 
-                    // latAvg += hdop*lat;
-                    // lngAvg += hdop*lng;
-                    // weight += hdop;
-
-                    onPosition(lat, lng);
+                    onPosition(new PositionRecord { lat = lat, lng = lng, speed = speed });
                 }
             }
 		}

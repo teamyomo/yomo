@@ -11,75 +11,90 @@ namespace yomo.Navigation
     /// </summary>
 	public class Navigator
 	{
-        float idealHeading;
-        float correctingHeading;
-        float courseDeviation; // In meters (right positive, left negative)
+        PointF initial;
+        PointF target;
+        float courseHeading;
+        float targetSpeed = 0;
 
         float distanceToTarget;
         float timeToTarget;
 
-        float lastLat;
-        float lastLng;
+        PointF lastPosition;
+
         float lastSpeed;
         float lastHeading;
 
-        float targetLat;
-        float targetLng;
-        float targetSpeed = 0;
+        float crossTrackError; // In meters (right positive, left negative)
+        float targetHeading;
+
+        Kinematics kinematics = new Kinematics();
+        Attitude attitude = new Attitude();
+        Position position = new Position();
 
         public Navigator ()
 		{
+            // start a background task to set the attitude loop
 		}
 
-        public void SetTarget(float lat, float lng, float speed)
+        /// <summary>
+        ///  Do everything we need to navigate any given step
+        /// </summary>
+        public void NavigationLoop()
         {
-            targetLat = lat;
-            targetLng = lng;
-            targetSpeed = speed;
+            // TODO: These attitude & position reader loops should run in the background
+
+            // Get Heading
+            attitude.LoopReadPosition(att => lastHeading = att.Heading);
+
+            // Get Position
+            position.LoopReadPosition(pos => { lastPosition.Y = pos.lat; lastPosition.X = pos.lng; lastSpeed = pos.speed; });
+
+            // Do the math to navigate
+
+            // Calculate cross track and heading
+            CalculateCTEAndDistance();
+
+            // Send to Kinematics
+            kinematics.KinematicsLoop(targetHeading, lastHeading, targetSpeed, lastSpeed);
         }
 
-        public void RefreshPosition(float lat, float lng, float speed, float heading)
+        public void SetRoute(PointF beginning, PointF target, float speed)
         {
-            lastLat = lat;
-            lastLng = lng;
-            lastSpeed = speed;
-            lastHeading = heading;
+            initial = beginning;
+            this.target = target;
+            targetSpeed = speed;
 
-            //CalculateDeviations();
+            var courseHeading = 180f * Math.Atan2(this.target.Y - initial.Y, this.target.X - initial.Y) / Math.PI;
 
-            //PidControlHeading();
+        }
 
-            //SteerWheels();
+        public void SetTarget(PointF destinatin, float speed)
+        {
+            SetRoute(lastPosition, destinatin, speed);
         }
 
         /// <summary>
         /// This isn't some fancy cross track error that uses the arcs of the earth... it's basic trig.  how far is a point from a line and how far till I get there
         /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="position"></param>
-        /// <param name="crossTrackError"></param>
-        /// <param name="distance"></param>
-        public static void CalculateCTEAndDistance(PointF start, PointF end, PointF position, out double crossTrackError, out double distance)
+        private void CalculateCTEAndDistance()
         {
-            var delta = end - start;
+            var delta = lastPosition - initial;
             var l_2 = delta.MagSquared;
-            distance = Math.Sqrt(l_2);
-
-            if (Math.Abs(l_2) < 0.01)
-            {
-                distance = crossTrackError = position.Distance(start);   // v == w case
-                return;
-            }
+            distanceToTarget = (float)Math.Sqrt(l_2);
 
             // Consider the line extending the segment, parameterized as v + t (w - v).
             // We find projection of point p onto the line. 
             // It falls where t = [(p-v) . (w-v)] / |w-v|^2
             // We clamp t from [0,1] to handle points outside the segment vw.
 
-            float t = Math.Max(0, Math.Min(1, PointF.Dot(position - start, delta) / l_2));
-            PointF projection = start + t * delta;  // Projection falls on the segment 
-            crossTrackError = position.Distance(projection);
+            float t = Math.Max(0, Math.Min(1, PointF.Dot(lastPosition - initial, delta) / l_2));
+            PointF projection = initial + t * delta;  // Projection falls on the segment 
+            crossTrackError = lastPosition.Distance(projection);
+
+            var courseCorrection = Math.Min(30, 10 * crossTrackError); // correction angle is cross track error distance * factor, but not over 30 degrees 
+            targetHeading = courseHeading + courseCorrection;
+
+            timeToTarget = (lastSpeed > 0) ? distanceToTarget / lastSpeed : 999;
         }
     }
 }
