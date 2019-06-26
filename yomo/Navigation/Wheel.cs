@@ -30,14 +30,14 @@ namespace yomo.Navigation
             pin.PwmRegister = 0; // (int)(pin.PwmRange * decimal duty); // This goes from 0 to PwmRange-1
         }
 
-        const float kFactor = 100.0f; // convertion from requested speed to PWM duty
+        const double kFactor = 100.0; // convertion from requested speed to PWM duty
         const uint MinDuty = 500;
 
         /// <summary>
         ///  Let's say that's M/S
         /// </summary>
         /// <param name="speed"></param>
-        public void SetSpeed(float speed)
+        public void SetSpeed(double speed)
         {
             var pwmDuty = (uint)(speed * kFactor);
             var inRange = (uint)Math.Max(MinDuty, Math.Min(MaxDuty, pwmDuty));

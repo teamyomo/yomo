@@ -11,21 +11,21 @@ namespace yomo.Navigation
     /// </summary>
 	public class Navigator
 	{
-        PointF initial;
-        PointF target;
-        float courseHeading;
-        float targetSpeed = 0;
+        Vector initial;
+        Vector target;
+        double courseHeading;
+        double targetSpeed = 0;
 
-        float distanceToTarget;
-        float timeToTarget;
+        double distanceToTarget;
+        double timeToTarget;
 
-        PointF lastPosition;
+        Vector lastPosition;
 
-        float lastSpeed;
-        float lastHeading;
+        double lastSpeed;
+        double lastHeading;
 
-        float crossTrackError; // In meters (right positive, left negative)
-        float targetHeading;
+        double crossTrackError; // In meters (right positive, left negative)
+        double targetHeading;
 
         Kinematics kinematics = new Kinematics();
         Attitude attitude = new Attitude();
@@ -47,7 +47,7 @@ namespace yomo.Navigation
             attitude.LoopReadPosition(att => lastHeading = att.Heading);
 
             // Get Position
-            position.LoopReadPosition(pos => { lastPosition.Y = pos.lat; lastPosition.X = pos.lng; lastSpeed = pos.speed; });
+            position.LoopReadPosition(pos => { lastPosition = new Vector(pos.lng, pos.lat); lastSpeed = pos.speed; });
 
             // Do the math to navigate
 
@@ -58,7 +58,7 @@ namespace yomo.Navigation
             kinematics.KinematicsLoop(targetHeading, lastHeading, targetSpeed, lastSpeed);
         }
 
-        public void SetRoute(PointF beginning, PointF target, float speed)
+        public void SetRoute(Vector beginning, Vector target, double speed)
         {
             initial = beginning;
             this.target = target;
@@ -68,7 +68,7 @@ namespace yomo.Navigation
 
         }
 
-        public void SetTarget(PointF destinatin, float speed)
+        public void SetTarget(Vector destinatin, double speed)
         {
             SetRoute(lastPosition, destinatin, speed);
         }
@@ -79,17 +79,17 @@ namespace yomo.Navigation
         private void CalculateCTEAndDistance()
         {
             var delta = lastPosition - initial;
-            var l_2 = delta.MagSquared;
-            distanceToTarget = (float)Math.Sqrt(l_2);
+            var l_2 = delta.SquaredLength;
+            distanceToTarget = Math.Sqrt(l_2);
 
             // Consider the line extending the segment, parameterized as v + t (w - v).
             // We find projection of point p onto the line. 
             // It falls where t = [(p-v) . (w-v)] / |w-v|^2
             // We clamp t from [0,1] to handle points outside the segment vw.
 
-            float t = Math.Max(0, Math.Min(1, PointF.Dot(lastPosition - initial, delta) / l_2));
-            PointF projection = initial + t * delta;  // Projection falls on the segment 
-            crossTrackError = lastPosition.Distance(projection);
+            var t = Math.Max(0, Math.Min(1, Vector.Dot(lastPosition - initial, delta) / l_2));
+            Vector projection = initial + t * delta;  // Projection falls on the segment 
+            crossTrackError = (lastPosition - projection).Length;
 
             var courseCorrection = Math.Min(30, 10 * crossTrackError); // correction angle is cross track error distance * factor, but not over 30 degrees 
             targetHeading = courseHeading + courseCorrection;

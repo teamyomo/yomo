@@ -17,7 +17,7 @@ namespace yomo.Models
         public string Name { get; set; }
         public Shape Shape {get; set; }
 
-        public float[] Coordinates; // every other lat/long
+        public double[] Coordinates; // every other lat/long
     }
 
     public class GeometryCatelogEntry

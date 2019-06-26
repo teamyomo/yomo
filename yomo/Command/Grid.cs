@@ -13,31 +13,29 @@ namespace yomo.Command
 
         public void CreateGrid(Geometry geometry, float gridSpacing, float orientation)
         {
-            var path = new List<PointF>();
+            var path = new List<Vector>();
 
             int len = geometry.Coordinates.Length;
             int len_2 = len / 2;
-            var pts = new PointF[len_2];
-            var slopes = new PointF[len_2];
+            var pts = new Vector[len_2];
+            var slopes = new Vector[len_2];
 
-            var ptMax = new PointF { X = float.MinValue, Y = float.MinValue };
-            var ptMin = new PointF { X = float.MaxValue, Y = float.MaxValue };
+            var ptMax = Vector.MinValue;
+            var ptMin = Vector.MaxValue;
 
-            var ptLast = new PointF { X = geometry.Coordinates[len-2], Y = geometry.Coordinates[len - 1] };
+            var ptLast = new Vector(geometry.Coordinates[len-2], geometry.Coordinates[len - 1] );
 
             // Transform region float array into a point array, and derive the bounding box
             for (int i = 0; i < len; i += 2)
             {
                 var iPt = i / 2;
-                var pt = pts[iPt] = new PointF { X = geometry.Coordinates[i], Y = geometry.Coordinates[i + 1] };
-                slopes[iPt - 1] = new PointF { X = pt.X - ptLast.X, Y = pt.Y - ptLast.Y }; // rise & runs for all lines
+                var pt = pts[iPt] = new Vector (geometry.Coordinates[i],geometry.Coordinates[i + 1] );
+                slopes[iPt - 1] = pt - ptLast; // rise & runs for all lines
                 ptLast = pt;
 
                 // Find extents
-                ptMax.X = Math.Max(ptMax.X, pt.X);
-                ptMax.Y = Math.Max(ptMax.Y, pt.Y);
-                ptMin.X = Math.Min(ptMax.X, pt.X);
-                ptMin.Y = Math.Min(ptMax.X, pt.Y);
+                ptMax.Max(pt); 
+                ptMin.Min(pt); 
 
                 // Add the parimeter once, this give some space to turn
                 path.Add(pt);
@@ -45,42 +43,39 @@ namespace yomo.Command
 
             // Prepare some values we'll need to do gridding derived from the bounding box
 
-            var bndsDX = (ptMax.X - ptMin.X);
-            var bndsDY = (ptMax.Y - ptMin.Y);
+            var regionBounds = ptMax - ptMin;
             
             // need to find a maximum bounds for count of grid lines... so assume it's perfectly diagonal and as far as it can be.
-            var perpLines = Math.Ceiling(Math.Sqrt(bndsDX * bndsDX + bndsDY * bndsDY) / gridSpacing);
+            var perpLines = (int)Math.Ceiling(regionBounds.Length/gridSpacing);
 
-            var ptCtr = new PointF { X = ptMin.X + bndsDX / 2, Y = ptMin.Y + bndsDX / 2 };
+            var centroid = ptMin + (regionBounds/2);
 
-            var dx = Math.Sin(orientation); // run
-            var dy = Math.Cos(orientation); // rise
+            // Unit vector orientation
+            // var uOrient = Vector.CreateVector(1.0, orientation);  I like dx/dy, but unit orientation might help
+            var uOrient = Vector.Unit(orientation);
 
             // parallel slope is dy/dx, perpendicular slope is -dx/dy
             // use perp to find the next row, use par to find intercepts with boundry
 
             // Point closest to minimum will be the first point to start gridding
             var ptParallel = pts
-                    .Select(p => new {p, dx = p.X - ptMin.X, dy = p.Y - ptMin.Y })
-                    .OrderBy(p => p.dx * p.dx + p.dy + p.dy)
+                    .Select(p => new { p, dp = ptMin - p})
+                    .OrderBy(p => p.dp.SquaredLength)
                     .First().p;
 
             // now figure out the step distance for each grid spacing, we'll use this to "walk" the parallel line points
             // (dx,dy) is a unit vector because it's a sin/cos pair, so this works without scaling effect.
-            var dxGrid = (float)(-dy * gridSpacing);
-            var dyGrid = (float)(dx * gridSpacing);
+            var deltaGrid = new Vector(-uOrient.Y * gridSpacing, uOrient.X * gridSpacing);
 
             // This is the working loop.
             // Go through all the line segments in the region and find all the intercepts with perpendicular lines at "gridSpacing" distances
             // ToDo: It may work cleaner to loop through the parallel routes, then the perimeter segments
             ptLast = pts[len_2 - 1];
+
             for (int i = 0; i < len_2; i++)
             {
                 var pt = pts[i];
-                var x34 = slopes[i].X;
-                var y34 = slopes[i].Y;
-
-                var c = (float)(dx * y34 - dy * x34);
+                var c = Vector.Determinent(uOrient, slopes[i]); 
 
                 // TODO: if we flipped the j indexer with the i indexer, we wouldn't have to do this... 
                 // and there may be some perimeter edge sorting tricks so it's faster
@@ -93,36 +88,28 @@ namespace yomo.Command
                 }
                 else
                 {
+                    var p3 = ptLast;
+                    var p4 = pt;
+                    var v34 = p4 - p3;
+
                     for (int j = 0; j < perpLines; j++)
                     {
                         // Find the x1,y1 x2,y2 for this parallel line 
-                        ptParT.X += dxGrid;
-                        ptParT.Y += dyGrid;
+                        ptParT += deltaGrid;
 
-                        var x1 = ptParT.X;
-                        var y1 = ptParT.Y;
-                        var x2 = (float)(x1 + dx);   // we "make up" a point on the same line by following the slope of the grid angle
-                        var y2 = (float)(y1 + dy);
-
-                        // TODO: There's like optimization that can be done here as we have the slopes of |(3,4)
-                        var x3 = ptLast.X;  // these (3,4) are just the last-current point which makes a line segment
-                        var y3 = ptLast.Y;
-                        var x4 = pt.X;
-                        var y4 = pt.Y;
-
-                        var x12 = x2 - x1;
-                        var y12 = y2 - y1;
+                        var p1 = ptParT;
+                        var p2 = ptParT + uOrient;
+                        var v12 = uOrient;
 
                         // Intersection determinent
-                        float a = x1 * y2 - y1 * x2;
-                        float b = x3 * y4 - y3 * x4;
+                        var a = Vector.Determinent(p1, p2);
+                        var b = Vector.Determinent(p3, p4);
 
-                        // this is the solve for the missing points (intesection)
-                        float x = (a * x34 - b * x12) / c;
-                        float y = (a * y34 - b * y12) / c;
-
-                        // Is this in segment |3-4 ?
-                        if (Between(x, x3, x4) && Between(y, y3, y4))
+                        // This is the solve for the missing points (intesection)
+                        var intercept = (a * v34 - b * v12) / c;
+                        
+                        // Is this in segment formed by v3-v4 ?
+                        if (Between(intercept.X, p3.X, p4.X) && Between(intercept.Y, p3.Y, p4.Y))
                         {
                             // We got it... so
                             // Add intercept (x,y) @ iPt for perpLine index
@@ -141,9 +128,70 @@ namespace yomo.Command
         /// <param name="v0"></param>
         /// <param name="v1"></param>
         /// <returns></returns>
-        public static bool Between(float v, float v0, float v1)
+        public static bool Between(double v, double v0, double v1)
         {
-            return Math.Abs(v - v0) + Math.Abs(v-v1) < 0.01;
+            return ((v > v0 && v < v1) || (v > v1 && v < v0));
+        }
+
+        public enum CoastLineAlgorithm { FindFirst, FindLast}
+
+        /// <summary>
+        ///  Coast-lining algorithm; given closed polygon generates a "coastline" algorithm
+        /// </summary>
+        /// <param name="poly"></param>
+        /// <param name="rulerLength"></param>
+        /// <returns></returns>
+        public static double[] Coastline(double[] poly, float rulerLength, CoastLineAlgorithm algorithm)
+        {
+            List<double> coastal = new List<double>();
+            var rulerLength_2 = rulerLength * rulerLength;
+            int i = 0;
+
+            while(i < poly.Length)
+            {
+                var x0 = poly[i];
+                var y0 = poly[i + 1];
+                double dx,dy;
+                int j;
+                bool found = false;
+
+
+                if (algorithm == CoastLineAlgorithm.FindFirst) // longest coast line (faster computing and leaves more details, better for regions)
+                {
+                    j = i;
+                    do
+                    {
+                        dx = (poly[++j] - x0);
+                        dy = (poly[++j] - y0);
+                    } while ((found = j < poly.Length) && dx * dx + dy * dy < rulerLength_2);
+                }
+                else // find last shortest coast line (slower computing, better for cleaning up routes)
+                {
+                    j = poly.Length;
+                    do
+                    {
+                        dy = (poly[--j] - x0);
+                        dx = (poly[--j] - y0);
+                    } while ((found = j > i) && dx * dx + dy * dy > rulerLength_2);
+                }
+
+                if (found)
+                {
+                    var p0 = new Vector(x0, y0);
+                    var p1 = new Vector(poly[j - 4], poly[j - 3]);
+                    var p2 = new Vector(poly[j - 2], poly[j - 1]);
+
+                    if (Vector.TryLineSegmentCircleInterpolate(p0, rulerLength, p1, p2, out p0))
+                    {
+                        coastal.Add(x0 = p0.X);
+                        coastal.Add(y0 = p0.Y);
+                    }
+                }
+
+                i = j;
+            }
+
+            return coastal.ToArray();
         }
     }
 }

@@ -17,14 +17,14 @@ namespace yomo.Navigation
 
         DateTime last = DateTime.Now;
 
-        float headingLast = 0;
+        double headingLast = 0;
 
-        const float kAlpha = 1.0f; // steering coefficient, more steer harder, less steer gently
+        const double kAlpha = 1.0f; // steering coefficient, more steer harder, less steer gently
 
         private PidController headingPid = new PidController(1.1, 0.1, 0.1, 180, -180);
         private PidController speedPid = new PidController(1.1, 0.1, 0.1, 180, -180);
 
-        public void KinematicsLoop(float headingDesired, float headingActual, float speedDesired, float speedActual)
+        public void KinematicsLoop(double headingDesired, double headingActual, double speedDesired, double speedActual)
         {
             // Set the heading & speed PID controllers
             headingPid.SetPoint = headingDesired;
@@ -44,11 +44,11 @@ namespace yomo.Navigation
 
             // calculate the change in angle from last
             var dAlpha = kAlpha * (headingLast - heading);
-            headingLast = (float)heading;
+            headingLast = heading;
 
             // Electronically "Mix" the speed and angle angle change to set the left/right motor speeds
-            left.SetSpeed((float)(speed + dAlpha));
-            right.SetSpeed((float)(speed - dAlpha));
+            left.SetSpeed(speed + dAlpha);
+            right.SetSpeed(speed - dAlpha);
         }
     }
 }
