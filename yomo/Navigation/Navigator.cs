@@ -1,5 +1,6 @@
 ﻿using System;
 using yomo.Utility;
+using static yomo.Navigation.Position;
 
 namespace yomo.Navigation
 {
@@ -11,21 +12,24 @@ namespace yomo.Navigation
     /// </summary>
 	public class Navigator
 	{
-        Vector initial;
+        // Active Course
+        Vector start;
         Vector target;
-        double courseHeading;
+
+        double courseHeading = 0;
         double targetSpeed = 0;
+        double targetHeading;
+        double crossTrackError; // In meters (right positive, left negative)
 
         double distanceToTarget;
         double timeToTarget;
 
-        Vector lastPosition;
+        // GPS inputs
+        PositionRecord gps;
 
-        double lastSpeed;
-        double lastHeading;
-
-        double crossTrackError; // In meters (right positive, left negative)
-        double targetHeading;
+        Vector lastPosition { get { return gps.position; } }
+        double lastSpeed { get { return gps.speed; } }
+        double lastHeading { get { return gps.course; } }
 
         Kinematics kinematics = new Kinematics();
         Attitude attitude = new Attitude();
@@ -34,23 +38,21 @@ namespace yomo.Navigation
         public Navigator ()
 		{
             // start a background task to set the attitude loop
-		}
+            // TODO: These attitude & position reader loops should run in the background
+
+            // Get Heading
+            // NOTE: I'm going to try not using the attitude sensor and rely on the accuracy of the GPS to drive heading changes
+//            attitude.LoopReadPosition(att => lastHeading = att.Heading);
+
+            // Get Position
+            position.LoopReadPosition(g => gps = g);
+        }
 
         /// <summary>
         ///  Do everything we need to navigate any given step
         /// </summary>
         public void NavigationLoop()
         {
-            // TODO: These attitude & position reader loops should run in the background
-
-            // Get Heading
-            attitude.LoopReadPosition(att => lastHeading = att.Heading);
-
-            // Get Position
-            position.LoopReadPosition(pos => { lastPosition = new Vector(pos.lng, pos.lat); lastSpeed = pos.speed; });
-
-            // Do the math to navigate
-
             // Calculate cross track and heading
             CalculateCTEAndDistance();
 
@@ -60,11 +62,11 @@ namespace yomo.Navigation
 
         public void SetRoute(Vector beginning, Vector target, double speed)
         {
-            initial = beginning;
+            start = beginning;
             this.target = target;
             targetSpeed = speed;
 
-            var courseHeading = 180f * Math.Atan2(this.target.Y - initial.Y, this.target.X - initial.Y) / Math.PI;
+            var courseHeading = 180f * Math.Atan2(this.target.Y - start.Y, this.target.X - start.Y) / Math.PI;
 
         }
 
@@ -78,7 +80,7 @@ namespace yomo.Navigation
         /// </summary>
         private void CalculateCTEAndDistance()
         {
-            var delta = lastPosition - initial;
+            var delta = lastPosition - start;
             var l_2 = delta.SquaredLength;
             distanceToTarget = Math.Sqrt(l_2);
 
@@ -87,8 +89,8 @@ namespace yomo.Navigation
             // It falls where t = [(p-v) . (w-v)] / |w-v|^2
             // We clamp t from [0,1] to handle points outside the segment vw.
 
-            var t = Math.Max(0, Math.Min(1, Vector.Dot(lastPosition - initial, delta) / l_2));
-            Vector projection = initial + t * delta;  // Projection falls on the segment 
+            var t = Math.Max(0, Math.Min(1, Vector.Dot(lastPosition - start, delta) / l_2));
+            Vector projection = start + t * delta;  // Projection falls on the segment 
             crossTrackError = (lastPosition - projection).Length;
 
             var courseCorrection = Math.Min(30, 10 * crossTrackError); // correction angle is cross track error distance * factor, but not over 30 degrees 

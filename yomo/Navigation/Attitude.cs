@@ -114,7 +114,7 @@ namespace yomo.Navigation
 
 		private static short GetInt(Stream sp)
 		{
-			return (short)((short)ReadByte() | (((short)ReadByte()) << 8));
+			return (short)((ushort)ReadByte() | (((ushort)ReadByte()) << 8));
 		}
 
 		private static short GetAngle(Stream sp)

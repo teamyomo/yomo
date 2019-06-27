@@ -11,7 +11,8 @@ namespace yomo.Navigation
 {
     public class Wheel
     {
-        int speed;
+        public double Speed { get; private set; }
+
         GpioPin pin;
 
         public Wheel(BcmPin gpioPin)
@@ -39,6 +40,7 @@ namespace yomo.Navigation
         /// <param name="speed"></param>
         public void SetSpeed(double speed)
         {
+            Speed = speed;
             var pwmDuty = (uint)(speed * kFactor);
             var inRange = (uint)Math.Max(MinDuty, Math.Min(MaxDuty, pwmDuty));
             pin.PwmRegister = (int)(MaxDuty / inRange);
