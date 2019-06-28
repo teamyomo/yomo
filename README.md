@@ -22,7 +22,7 @@ I want a 100% autonimous non-stupid set-it-forget-it bulk grass cutting device t
 This is the logical and physical layout of the components
 ![logical and physical design diagram](resources/yomo_design.png)
 
-![brains of the rover](resources/Brains.jpg)
+![brains of the rover](resources/brains.jpg)
 
 
 [Detailed Design](Design.md)
