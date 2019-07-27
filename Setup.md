@@ -47,7 +47,7 @@ If the last command works, you should be good to roll with yomo
 * Update the elements "SshDeployHost" and "SshDeployPassword" to match your Pi setup.
 * Press F5 and build
 
-If succesfful you should have a folder "yomo" on your pi root directory.
+If successful you should have a folder "yomo" on your pi root directory.
 
 # Running Yomo
 
