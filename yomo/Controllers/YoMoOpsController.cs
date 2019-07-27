@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using yomo.Models;
 
 namespace yomo.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class YoMoOpsController : ControllerBase
+    public class yomoApiController : ControllerBase
     {
-        public class YoMoOp
+        public class yomoApiRecord
         {
             public Monitor Monitor;
             public Configuration Configuration;
@@ -21,11 +16,11 @@ namespace yomo.Controllers
 
         // GET: YoMoOps monitor and configuration settings
         [HttpGet]
-        public YoMoOp Get()
+        public yomoApiRecord Get()
         {
             // Update the monitor info and pull the configuration from disk
 
-            return new YoMoOp()
+            return new yomoApiRecord()
             {
                 Monitor = new Monitor(),
                 Configuration = new Configuration(),

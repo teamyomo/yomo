@@ -1,18 +1,41 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <SshDeployHost>192.168.2.16</SshDeployHost>
+    <SshDeployTargetPath>/home/pi/yomo</SshDeployTargetPath>
+    <SshDeployUsername>pi</SshDeployUsername>
+    <SshDeployPassword>blue20</SshDeployPassword>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="default.htm" />
+    <None Remove="index.sav.html" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="crozone.LinuxSerialPort" Version="1.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="Unosquare.RaspberryIO.Peripherals" Version="0.3.0" />
     <PackageReference Include="Unosquare.WiringPi" Version="0.3.1" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Content Update="wwwroot\default.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\index.sav.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Condition="$(BuildingInsideSshDeploy) ==''" Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="cd $(ProjectDir)" />
+    <Exec Command="dotnet-sshdeploy push" />
+  </Target>
 
 </Project>

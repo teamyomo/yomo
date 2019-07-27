@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,6 +27,7 @@ namespace yomo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => options.OutputFormatters.Add(new HtmlOutputFormatter()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,8 +43,17 @@ namespace yomo
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseMvc();
+        }
+    }
+
+    public class HtmlOutputFormatter : StringOutputFormatter
+    {
+        public HtmlOutputFormatter()
+        {
+            SupportedMediaTypes.Add("text/html");
         }
     }
 }

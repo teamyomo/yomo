@@ -12,8 +12,8 @@ namespace yomo.Navigation
     public class Kinematics
     {
         // The wheels we intend to drive and which pin they are attached to.
-        Wheel left = new Wheel(BcmPin.Gpio13);
-        Wheel right = new Wheel(BcmPin.Gpio18);
+        Wheel left = new Wheel(BcmPin.Gpio13, BcmPin.Gpio06, BcmPin.Gpio05);
+        Wheel right = new Wheel(BcmPin.Gpio18, BcmPin.Gpio23, BcmPin.Gpio24);
 
         DateTime last = DateTime.Now;
 
@@ -47,8 +47,8 @@ namespace yomo.Navigation
             headingLast = heading;
 
             // Electronically "Mix" the speed and angle angle change to set the left/right motor speeds
-            left.SetSpeed(speed + dAlpha);
-            right.SetSpeed(speed - dAlpha);
+            left.SetSpeed((int)(speed + dAlpha));
+            right.SetSpeed((int)(speed - dAlpha));
         }
     }
 }

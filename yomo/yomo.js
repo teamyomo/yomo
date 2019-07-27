@@ -8,11 +8,11 @@
         createQueryHash(filters);
     });
 
-    $.getJSON("products.json", function (data) {
+    $.getJSON("/yomoApi", function (data) {
         // Get data about our products from products.json.
 
         // Call a function that will turn that data into HTML.
-        generateAllProductsHTML(data);
+        generateOpsHTML(data);
 
         // Manually trigger a hashchange to start the app.
         $(window).trigger('hashchange');
@@ -29,7 +29,7 @@
         // depending on the current url hash value.
     }
 
-    function generateAllProductsHTML(data) {
+    function generateOpsHTML(data) {
         // Uses Handlebars to create a list of products using the provided data.
         // This function is called only once on page load.
     }
