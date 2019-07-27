@@ -43,17 +43,23 @@ If the last command works, you should be good to roll with yomo
 * Install Visual Studio 2019
 * Clone [this repo](https://github.com/bruceme/yomo)
 * Open yomo.sln
-* Right click on "yomo" and select 'edit .csproj'
+* Right click on "yomo" and select 'Edit Project File'
 * Update the elements "SshDeployHost" and "SshDeployPassword" to match your Pi setup.
 * Press F5 and build
 
 If succesfful you should have a folder "yomo" on your pi root directory.
 
 # Running Yomo
+
+_If you're debugging..._
 ```
 cd yomo
 sudo dotnet yomo.dll
 ```
+
+_To "autoboot" yomo put the command above at the end of..._
+
+` sudo nano /etc/rc.local `
 
 # Sources
 
