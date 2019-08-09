@@ -20,6 +20,7 @@ namespace yomo
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://0.0.0.0");
+                .UseUrls("http://0.0.0.0")
+                ;
     }
 }
