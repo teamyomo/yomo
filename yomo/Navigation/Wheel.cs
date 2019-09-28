@@ -9,6 +9,14 @@ using Unosquare.WiringPi;
 
 namespace yomo.Navigation
 {
+    public enum WheelId
+    {
+        LeftRear = 1,
+        RightRear = 2,
+        LeftFront = 3,
+        RightFront = 4
+    };
+
     public class Wheel : IWheel
     {
         public double Speed { get; private set; }
@@ -25,7 +33,6 @@ namespace yomo.Navigation
         /// <param name="pinRev">Pin used to enable reverse</param>
         public Wheel(BcmPin pinPwm, BcmPin pinFwd, BcmPin pinRev)
         {
-
             PinFwd = (GpioPin)Pi.Gpio[pinFwd];
             PinFwd.PinMode = GpioPinDriveMode.Output;
             PinFwd.Write(true);

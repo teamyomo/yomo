@@ -33,7 +33,8 @@ namespace yomo.Navigation
 
         Kinematics kinematics = new Kinematics();
         Attitude attitude = new Attitude();
-        Position position = new Position();
+        IPosition position = yomo.Glue.CreatePosition();
+
 
         public Navigator ()
 		{

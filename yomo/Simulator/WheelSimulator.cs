@@ -14,9 +14,23 @@ namespace yomo.Simulator
 
         public double Speed => throw new NotImplementedException();
 
+        public WheelId Id { get; set; }
+
+        public WheelSimulator(WheelId id)
+        {
+            Id = id;
+        }
+
         public void SetSpeed(int speed)
         {
-            throw new NotImplementedException();
+            if (Id == WheelId.LeftRear)
+            {
+                Vehicle.LeftWheelSpeed = speed;
+            }
+            else
+            {
+                Vehicle.RightWheelSpeed = speed;
+            }
         }
     }
 }
