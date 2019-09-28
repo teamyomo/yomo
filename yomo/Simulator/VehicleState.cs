@@ -21,6 +21,11 @@ namespace yomo.Simulator
 
         public static Position.PositionRecord lastPosition { get; set; }
 
+        static Vehicle()
+        {
+            LastReq = DateTime.UtcNow;
+        }
+
         public static Position.PositionRecord Position
         {
             get
