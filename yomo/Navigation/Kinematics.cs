@@ -12,8 +12,8 @@ namespace yomo.Navigation
     public class Kinematics
     {
         // The wheels we intend to drive and which pin they are attached to.
-        Wheel left = new Wheel(BcmPin.Gpio13, BcmPin.Gpio06, BcmPin.Gpio05);
-        Wheel right = new Wheel(BcmPin.Gpio18, BcmPin.Gpio23, BcmPin.Gpio24);
+        IWheel left = yomo.Glue.CreateWheel(BcmPin.Gpio13, BcmPin.Gpio06, BcmPin.Gpio05, WheelId.LeftRear);
+        IWheel right = yomo.Glue.CreateWheel(BcmPin.Gpio18, BcmPin.Gpio23, BcmPin.Gpio24, WheelId.RightRear);
 
         DateTime last = DateTime.Now;
 

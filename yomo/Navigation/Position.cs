@@ -15,9 +15,9 @@ namespace yomo.Navigation
         EstimatedMode = 'E'
     }
 
-    public class Position
-	{
-		const string portName = "/dev/serial0";
+    public class Position : IPosition
+    {
+        const string portName = "/dev/serial0";
 
         public class PositionRecord
         {
@@ -28,7 +28,7 @@ namespace yomo.Navigation
         }
 
         public void LoopReadPosition(Action<PositionRecord> onPosition)
-		{
+        {
             // float latAvg = 0f;
             // float lngAvg = 0f;
             // float weight = 0f;
@@ -57,7 +57,7 @@ namespace yomo.Navigation
                     });
                 }
             }
-		}
+        }
 
         /// <summary>
         /// Convert
@@ -66,7 +66,7 @@ namespace yomo.Navigation
         /// <param name="value"></param>
         /// <param name="cardinal"></param>
         /// <returns></returns>
-        private static double ParseCoordinate (string value, char cardinal)
+        private static double ParseCoordinate(string value, char cardinal)
         {
             // Use the period to split the coordinate... Don't assume zero padding on whole degrees
             var decMk = value.IndexOf('.');
