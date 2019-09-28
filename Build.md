@@ -7,8 +7,8 @@ A small test bot will help prove the code/concepts and understand the hardware a
 Bill of materials
 
 * Raspberry Pi 3A+
-* Raspberry Pi Motor Hat
-* Robot Chasis
+* [Raspberry Pi Motor Hat/Waveshare Motor Driver HAT for Raspberry Pi Zero/Zero W/Zero WH/2B/3B/3B+ via DC](https://www.ebay.com/itm/312749529053)
+* [Robot Chasis / 2WD Smart Motor Robot Car Chassis Battery Box Kit](https://www.ebay.com/itm/263186900317)
 
 # DGPS
 
