@@ -2,10 +2,7 @@
 
 A small test bot will help prove the code/concepts and understand the hardware an how it all works together in your own shop instead of trying to trying to work out glitches in your back yard.
 
-## BOM
-
-Bill of materials
-
+Parts:
 * Raspberry Pi 3A+
 * [Raspberry Pi Motor Hat/Raspberry Pi Full Function Motor HAT](https://www.ebay.com/itm/183810223243)
 * [Robot Chasis / 2WD Smart Robot Car Chassis Kit](https://www.ebay.com/itm/383143792928)
