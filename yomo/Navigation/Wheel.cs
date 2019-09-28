@@ -9,7 +9,7 @@ using Unosquare.WiringPi;
 
 namespace yomo.Navigation
 {
-    public class Wheel
+    public class Wheel : IWheel
     {
         public double Speed { get; private set; }
 
