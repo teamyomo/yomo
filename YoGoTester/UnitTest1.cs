@@ -9,6 +9,9 @@ namespace YoGoTester
         [Fact]
         public void Test1()
         {
+            // Use simulator, not real board
+            yomo.Simulator.SimulatorGlue.Glue();
+
             var nav = new Navigator();
 
             nav.SetTarget(new yomo.Utility.Vector(0, 100), 100);

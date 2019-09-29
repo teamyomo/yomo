@@ -24,6 +24,7 @@ namespace yomo.Simulator
         static Vehicle()
         {
             LastReq = DateTime.UtcNow;
+            lastPosition = new Position.PositionRecord();
         }
 
         public static Position.PositionRecord Position
@@ -36,7 +37,7 @@ namespace yomo.Simulator
 
 
                 // calculate the distance
-                var distance = (LeftWheelSpeed + RightWheelSpeed) * dt / 2;
+                var distance = (LeftWheelSpeed + RightWheelSpeed) * dt / 2000;
                 var changeInHeading = kHeading * (LeftWheelSpeed - RightWheelSpeed) * dt;
 
                 // Wrap around 0..2Pi

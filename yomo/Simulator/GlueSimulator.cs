@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace yomo.Simulator
 {
-    static class SimulatorGlue
+    public static class SimulatorGlue
     {
         public static void Glue()
         {
