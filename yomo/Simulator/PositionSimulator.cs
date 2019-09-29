@@ -11,7 +11,9 @@ namespace yomo.Simulator
     {
         public void LoopReadPosition(Action<Position.PositionRecord> onPosition)
         {
-            new Timer(1000).Elapsed += (o, arg) => onPosition(Vehicle.Position);
+            var tmr = new Timer(1000);
+            tmr.Elapsed += (o, arg) => onPosition(Vehicle.Position);
+            tmr.Start();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace yomo.Navigation
 
         public class PositionRecord
         {
-            public Vector position;
+            public Vector position = new Vector(0,0);
             public float speed;
             public float course;
             public GPSStatus mode;
