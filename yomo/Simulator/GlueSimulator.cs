@@ -7,10 +7,6 @@ namespace yomo.Simulator
 {
     public static class SimulatorGlue
     {
-        public static void Glue()
-        {
-            yomo.Glue.CreateWheel = (pwm, fwd, rev, id) => new WheelSimulator(id);
-            yomo.Glue.CreatePosition = () => new PositionSimulator();
-        }
+
     }
 }
