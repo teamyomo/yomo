@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +32,7 @@ namespace yomo
 
         public static void TestBot()
         {
-            yomo.Glue.CreateWheel = (pwm, fwd, rev, id) => new MotorHatWheel() { Channel = (int)(id - 1) };
+            yomo.Glue.CreateWheel = (pwm, fwd, rev, id) => new MotorHatWheel() { MotorNumber = (int)(id - 1) };
             yomo.Glue.CreatePosition = () => new Position();
         }
     }

@@ -60,7 +60,7 @@ namespace yomo.Utility
         II2CDevice device;
         int i2cAddress;
 
-        public PCA9685(int busId = 2, int address = 0x46)
+        public PCA9685(int address = 0x46) // [BEM] PWM driver has this address as 0x40, also used 0x60 in a different file for the same driver ?!?!
         {
             device = Pi.I2C.AddDevice(i2cAddress = address);
 
@@ -76,7 +76,7 @@ namespace yomo.Utility
                 | __PCA9685_MODE1_SUB1_DISABLED
                 | __PCA9685_MODE1_SUB1_DISABLED
                 | __PCA9685_MODE1_SUB3_DISABLED
-                | __PCA9685_MODE1_ALLCALL_DISABLED
+                | __PCA9685_MODE1_ALLCALL_DISABLED // [BEM] PWM driver had this enabled (0x01).
                 ;
 
             device.WriteAddressByte(__PCA9685_REG_MODE1, (byte)config);
