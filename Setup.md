@@ -57,9 +57,18 @@ cd yomo
 sudo dotnet yomo.dll
 ```
 
+_To launch the web admin page from any wifi connected machine_
+
+```
+http://192.168.1.{pi}
+```
+
 _To "autoboot" yomo put the command above at the end of..._
 
 ` sudo nano /etc/rc.local `
+
+After you have the yomo running on the pi... You should be able to see the Admin Console using this url format...
+
 
 # Sources
 
