@@ -15,6 +15,14 @@ namespace yomo
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
+
+            // Setup the testbot glue
+            if (args.Any(a=>a.Contains("--TestBot")))
+                Glue.TestBot();
+            else if (args.Any(a => a.Contains("--SoftBot")))
+                Glue.Simulate();
+            else
+                Glue.YomoBot();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
