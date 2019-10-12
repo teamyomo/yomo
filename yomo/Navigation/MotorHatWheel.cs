@@ -47,7 +47,7 @@ namespace yomo.Navigation
             var absSpeed = Math.Abs(speed);
 
             // Bound speed between min and max, same-signed
-            var boundSpeed = (absSpeed < MaxDuty - DutyRange) ? 0 : Math.Sign(speed) * Math.Max(Math.Min(absSpeed, (int)MaxDuty))
+            var boundSpeed = (absSpeed < MaxDuty - DutyRange) ? 0 : Math.Sign(speed) * Math.Min(absSpeed, (int)MaxDuty);
 
             if (boundSpeed == 0)
             {

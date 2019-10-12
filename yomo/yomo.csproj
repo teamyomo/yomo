@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-    <SshDeployHost>192.168.2.16</SshDeployHost>
+    <SshDeployHost>192.168.2.14</SshDeployHost>
     <SshDeployTargetPath>/home/pi/yomo</SshDeployTargetPath>
     <SshDeployUsername>pi</SshDeployUsername>
     <SshDeployPassword>blue20</SshDeployPassword>
