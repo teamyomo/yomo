@@ -3,7 +3,6 @@ using yomo.Utility;
 
 namespace yomo.Navigation
 {
-    
     public class MotorHatWheel : IWheel
     {
         class PWMConfig
