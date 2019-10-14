@@ -57,7 +57,7 @@ namespace yomo.Navigation
         }
 
         const double kFactor = 100.0; // convertion from requested speed to PWM duty
-        const uint MinDuty = 200;
+        const uint minDuty = 200;
 
         /// <summary>
         ///  Let's say that's M/S
@@ -88,7 +88,7 @@ namespace yomo.Navigation
             }
         }
 
-        public uint DutyRange { get { return MaxDuty - MinDuty; } }
-        public uint MaxDuty { get { return PinPwm.PwmRange; } }
+        public uint MinDuty { get { return 0; } }
+        public uint MaxDuty { get { return 4095; } }
     }
 }

@@ -32,7 +32,7 @@ namespace yomo
 
         public static void TestBot()
         {
-            yomo.Glue.CreateWheel = (pwm, fwd, rev, id) => new MotorHatWheel() { MotorNumber = (int)(id - 1) };
+            yomo.Glue.CreateWheel = (pwm, fwd, rev, id) => new MotorHat() { MotorNumber = ((int)id - 1) };
             yomo.Glue.CreatePosition = () => new Position();
         }
     }

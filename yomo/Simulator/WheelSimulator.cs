@@ -8,7 +8,7 @@ namespace yomo.Simulator
 {
     public class WheelSimulator : IWheel
     {
-        public uint DutyRange => throw new NotImplementedException();
+        public uint MinDuty => throw new NotImplementedException();
 
         public uint MaxDuty => throw new NotImplementedException();
 

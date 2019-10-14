@@ -60,14 +60,13 @@ namespace yomo.Utility
         II2CDevice device;
         int i2cAddress;
 
-        public PCA9685(int address = 0x46) // [BEM] PWM driver has this address as 0x40, also used 0x60 in a different file for the same driver ?!?!
+        public PCA9685(int address, int frequency = 1600) // NOTE: The I2C address is configurable by the chip between 0x40 through 0x7F with some exclusions
         {
             device = Pi.I2C.AddDevice(i2cAddress = address);
-
-            Setup();
+            Setup(frequency);
         }
 
-        public void Setup()
+        public void Setup(int frequency)
         {
             var config = __PCA9685_MODE1_RESTART_DISABLED
                 | __PCA9685_MODE1_EXTCLK_DISABLED
@@ -76,13 +75,14 @@ namespace yomo.Utility
                 | __PCA9685_MODE1_SUB1_DISABLED
                 | __PCA9685_MODE1_SUB1_DISABLED
                 | __PCA9685_MODE1_SUB3_DISABLED
-                | __PCA9685_MODE1_ALLCALL_DISABLED // [BEM] PWM driver had this enabled (0x01).
+                | __PCA9685_MODE1_ALLCALL_DISABLED // [BEM] disable now, enable later
                 ;
 
             device.WriteAddressByte(__PCA9685_REG_MODE1, (byte)config);
 
             config = __PCA9685_MODE2_INVRT_DISABLED
                     | __PCA9685_MODE2_OCH_STOP
+                    | __PCA9685_MODE2_OUTDRV_OPENDRAIN
                     | __PCA9685_MODE2_OUTDRV_TOTEMPOLE
                     | __PCA9685_MODE2_OUTNE_0
                     ;
@@ -90,6 +90,7 @@ namespace yomo.Utility
             device.WriteAddressByte(__PCA9685_REG_MODE2, (byte)config);
 
             SetAllPwm(0, 0);
+            SetPwmClock(frequency);
         }
 
         public void SetPwm(int ch, int on, int off)
@@ -105,17 +106,22 @@ namespace yomo.Utility
 
         private void SetPwmCore(int regAddress, int on, int off)
         {
-            device.WriteAddressByte(regAddress + 0, LO(on));
-            device.WriteAddressByte(regAddress + 1, HI(on));
-            device.WriteAddressByte(regAddress + 2, LO(off));
-            device.WriteAddressByte(regAddress + 3, HI(off));
+            device.WriteAddressByte(regAddress++, LO(on));
+            device.WriteAddressByte(regAddress++, HI(on));
+            device.WriteAddressByte(regAddress++, LO(off));
+            device.WriteAddressByte(regAddress, HI(off));
         }
         private static byte HI(int v) { return (byte)((v >> 8) & 0x0F); }
         private static byte LO(int v) { return (byte)(v & 0xFF); }
 
+        /// <summary>
+        /// Set duty 0 - 4095
+        /// </summary>
+        /// <param name="ch">0-15</param>
+        /// <param name="duty">0-4095</param>
         public void SetPwmDuty(int ch, int duty)
         {
-            SetPwm(ch, 0, duty * 4096);
+            SetPwm(ch, 0, duty);
         }
 
         public void SetPreScaler(int prescaler)
