@@ -1,4 +1,15 @@
 ![logical and physical design diagram](resources/yomo_design.png)
+
+# Design Overview
+
+The goal of the design is a truelly autonymous grass cutting vehicle.  Some key attributes of this design are;
+
+* Runs indefinatley without assistance
+* Reports errors/issues meaningfully (alerts)
+* Layered design approach... highest to lowest-level 
+
+[Technology Stacks](Implementation.md)
+
 # Application
 
 There is one primary application all of the software is running under.  It is responsible for all of the software responsibilities listed directly above.  It is a single instance of a .Net Core ASP.Net 2.2 WebAPI with several background processes sharing a common Application Layer Context (ALC) between "modules" (really classes).  The RESTfull API controller is mearly presenting aspects of the ALC as json to the web client which interprets that json into presentation for the operator. 
