@@ -6,6 +6,14 @@ Autonomous solar-only lawn trimming rover
 
 I want a 100% autonomous non-stupid set-it-forget-it bulk grass cutting device that I didn't have to babysit, watch, push, tow or remote into.  Setup the perimeter and let it do its thing so long as the sun is shining and the good Lord is willing!
 
+# Deeper Dive
+
+Want to get to know more... there's more
+
+[Detailed Design](Design.md) - Architecture and overall system design
+[Go Build](Build.md) -Build - How to make a reel power
+[Software Setup](Setup.md) - How to setup the Pi and write code
+
 # Technology
 
 - Power chair motors
@@ -15,21 +23,9 @@ I want a 100% autonomous non-stupid set-it-forget-it bulk grass cutting device t
 - 2x Long ranage 915mhz trasmitter/receiver modules
 - 3x H-Bridge to power the motors
 
-# Design
+# Status
 
-This is the logical and physical layout of the components
-![logical and physical design diagram](resources/yomo_design.png)
-
-![brains of the rover](resources/brains.jpg)
-
-
-[Detailed Design](Design.md)
-
-[The implemenation specification](Implementation.md) details the hardware/software components that will make-up the rover and how/what technology they will be built on.
-
-# Steps
-
-## Current Status
+## Current
 - Fully architected, designed & UX mock-up (see this repo)
 - Mounted the power chair motors very slickly on the reel mower (I tied into the existing bolts in the side rails)
 - Written much of the control system (Navigation, Kinematics and much of the configuration)
