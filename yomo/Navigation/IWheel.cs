@@ -2,7 +2,7 @@
 {
     public interface IWheel
     {
-        uint DutyRange { get; }
+        uint MinDuty { get; }
         uint MaxDuty { get; }
         double Speed { get; }
 
