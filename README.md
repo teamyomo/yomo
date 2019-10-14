@@ -11,7 +11,7 @@ I want a 100% autonomous non-stupid set-it-forget-it bulk grass cutting device t
 Want to get to know more... there's more
 
 * [Detailed Design](Design.md) - Architecture and overall system design
-* [BOM](Implementation.md) details the hardware/software components that will make-up the rover and how/what technology they will be built on.
+* [BOM](Implementation.md) hardware/software components to built on.
 * [Go Build](Build.md) -Build - How to make a reel power
 * [Software Setup](Setup.md) - How to setup the Pi and write code
 
