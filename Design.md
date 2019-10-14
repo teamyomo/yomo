@@ -47,6 +47,7 @@ _Future Configurations_
 
 The configurations and directing commands will be done via an HTML page running client-side javascript talking to a RESTful WebAPI service running on the Raspberry Pi (see Application description above).
 
+![UX Mock](resources/UX%20Mock.png)
 
 # Background Services
 
