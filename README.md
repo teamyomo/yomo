@@ -4,7 +4,7 @@ Autonomous solar-only lawn trimming rover
 
 # WHY?!
 
-I want a 100% autonomous non-stupid set-it-forget-it bulk grass cutting device that I didn't have to babysit, watch, push, tow or remote into.  Setup the perimeter and let it do its thing so long as the sun is shining and the good Lord is willing!
+I want a 100% autonomous non-stupid set-it-forget-it bulk grass cutting device that I didn't have to babysit, watch, push, tow or remote into.  Setup the perimeter and let it do its thing so long as the sun is shining and the good Lord is scything!
 
 # Deeper Dive
 
