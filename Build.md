@@ -9,6 +9,10 @@ Parts:
 
 # DGPS
 
+Getting a hyper accurate position sensor is really the key to this project actually working at all.  After a lot of searching I found an  inexpensive RTK GPS setup with good instructional videos and great documentation (really good).  It's modules only, so there's manual setups and configurations and it needs a separate LoRa transciever to sync the sat offset data.  But the chips do all the real work and the project gets 1cm accuracy.
+
+The whole RTK setup cost ~$250.  Next cheapest "hobby grade" is $600; after that it goes up steeply.  $1500 for the first shrink wrap solution then sky is the limit for survey stuff (2k-5k). 
+
 After you've got the basics of the wheels working, add the high precision DGPS.
 
 * 2x GPS Receivers
@@ -18,6 +22,14 @@ After you've got the basics of the wheels working, add the high precision DGPS.
 One unit will be setup as the "base" unit.  Connect the transciever Rx pin to the TX2 pin of the GPS unit and power it using any reasonable source (USB power supply, battery or solar panel).
 
 The second unit is the "Roving" unit.  Connnect the second transceiver's Tx pin to the GPS's RX2 pin.  Power the unit off the Raspberry Pi's 5v supply and connect the pins from the GPS's TX1/RX1 to the opposite/swapped RX/TX pins on the Raspberry Pi's serial port.
+
+6/27 UPDATE: I had some bother setting up my own USB-UART dongle (not the one they sell). Once I sorted those issues out the NavStar RTK GPS setup _EXACTLY_ like the video, very impressive, very straight forward.  I haven't tested the correction serial links yet, but I'll get those in soon.
+
+Watch this video:
+[NavSpark Overview/Setup video](https://www.youtube.com/watch?v=17fS9YZC84I)
+
+Source:
+[NavSpark Store](http://navspark.mybigcommerce.com/)
 
 # Full Build
 
